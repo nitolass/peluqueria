@@ -11,11 +11,10 @@ use App\Admin\Users\Models\User;
 class AppointmentController extends Controller
 {
     /**
-     * Mostrar todas las citas del sistema (puedes usar para admin)
+     * Mostrar todas las citas del usuario logueado
      */
     public function index()
     {
-        // Todos los usuarios ven solo sus citas
         $appointments = Appointment::with('user', 'service')
             ->where('user_id', Auth::id())
             ->get();
@@ -24,27 +23,25 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Formulario de creación de cita
-     * Mostramos servicios y calendario con horas ocupadas
+     * Formulario para crear nueva cita
      */
     public function create()
     {
         $services = Service::all();
+        $users = User::all(); // Para poder elegir usuario si quieres mostrarlo
 
-        // Obtener citas existentes del usuario
         $appointments = Auth::user()->appointments()->get();
 
-        // Array de horas ya ocupadas por fecha
         $bookedSlots = [];
         foreach ($appointments as $appointment) {
             $bookedSlots[$appointment->date][] = $appointment->time;
         }
 
-        return view('admin.appointments.create', compact('services', 'bookedSlots'));
+        return view('admin.appointments.create', compact('services', 'users', 'bookedSlots'));
     }
 
     /**
-     * Guardar una nueva cita
+     * Guardar cita
      */
     public function store(Request $request)
     {
@@ -52,17 +49,18 @@ class AppointmentController extends Controller
             'service_id' => 'required|exists:services,id',
             'date' => 'required|date',
             'time' => 'required',
+            'user_id' => 'sometimes|exists:users,id',
         ]);
 
         $appointment = new Appointment();
         $appointment->service_id = $request->service_id;
-        $appointment->user_id = Auth::id();
+        $appointment->user_id = $request->user_id ?? Auth::id();
         $appointment->date = $request->date;
         $appointment->time = $request->time;
         $appointment->status = 'pending';
         $appointment->save();
 
-        return redirect()->route('admin.appointments.index')
+        return redirect()->route('appointments.index')
             ->with('success', 'Cita creada correctamente');
     }
 }

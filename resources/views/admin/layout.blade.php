@@ -14,7 +14,7 @@
         <div class="flex justify-between items-center h-16">
 
             <!-- Logo -->
-            <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('client.dashboard') }}"
+            <a href="{{ route('dashboard') }}"
                class="text-white text-2xl font-bold hover:opacity-90 transition">Juan Studio Hair</a>
 
             <!-- Menú usuario -->

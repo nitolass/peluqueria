@@ -3,6 +3,7 @@
 use App\Admin\Users\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,7 +12,8 @@ Route::get('/', function () {
 
 // Dashboard general
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $appointments = auth()->user()->appointments()->with('service')->get();
+    return view('dashboard', compact('appointments'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Rutas protegidas por autenticación
@@ -35,6 +37,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/store', [ProductController::class, 'store'])->name('products.store');
     });
+
+    // Rutas de appointments
+    Route::prefix('appointments')->group(function () {
+        Route::get('/', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('/create', [AppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('/store', [AppointmentController::class, 'store'])->name('appointments.store');
+    });
+
 });
 
 require __DIR__.'/auth.php';

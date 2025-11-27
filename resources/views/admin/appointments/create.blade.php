@@ -3,7 +3,7 @@
 @section('content')
     <h2>Crear nueva cita (Admin)</h2>
 
-    <form action="{{ route('admin.appointments.store') }}" method="POST">
+    <form action="{{ route('appointments.store') }}" method="POST">
         @csrf
         <label>Usuario:</label>
         <select name="user_id">

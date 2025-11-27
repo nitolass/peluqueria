@@ -1,47 +1,47 @@
-@extends('layout')
+@extends('layouts.app') <!-- tu layout principal -->
 
 @section('content')
-    <div class="min-h-screen bg-gray-100 p-8">
+    <div class="bg-white shadow-md rounded-lg p-6">
 
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-4xl font-bold text-gray-800 mb-6">Bienvenido, {{ auth()->user()->name }}</h1>
+        <h2 class="text-2xl font-bold mb-4">Mis Citas</h2>
 
-            <!-- Tarjeta de próximas citas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                @forelse(auth()->user()->appointments->sortBy('date') as $appointment)
-                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition">
-                        <h2 class="text-xl font-semibold mb-2">{{ $appointment->service->name }}</h2>
-                        <p class="text-gray-600 mb-1"><strong>Fecha:</strong> {{ $appointment->date->format('d/m/Y') }}</p>
-                        <p class="text-gray-600 mb-1"><strong>Hora:</strong> {{ $appointment->time }}</p>
-                        <p class="text-sm font-medium
-                        {{ $appointment->status === 'pending' ? 'text-yellow-600' : 'text-green-600' }}">
-                            {{ ucfirst($appointment->status) }}
-                        </p>
-                    </div>
-                @empty
-                    <p class="text-gray-600 col-span-full">No tienes citas programadas.</p>
-                @endforelse
-
+        @if($appointments->isEmpty())
+            <p class="text-gray-600 mb-4">No tienes ninguna cita reservada.</p>
+            <a href="{{ route('appointments.create') }}"
+               class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                Reservar nueva cita
+            </a>
+        @else
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-2 px-4 border-b">Servicio</th>
+                        <th class="py-2 px-4 border-b">Fecha</th>
+                        <th class="py-2 px-4 border-b">Hora</th>
+                        <th class="py-2 px-4 border-b">Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($appointments as $appointment)
+                        <tr>
+                            <td class="py-2 px-4 border-b">{{ $appointment->service->name }}</td>
+                            <td class="py-2 px-4 border-b">{{ \Carbon\Carbon::parse($appointment->date)->format('l, d M Y') }}</td>
+                            <td class="py-2 px-4 border-b">{{ $appointment->time }}</td>
+                            <td class="py-2 px-4 border-b capitalize">{{ $appointment->status }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
 
-            <!-- Botón para crear nueva cita -->
-            <div class="mt-8">
-                <a href="{{ route('admin.') }}"
-                   class="px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-900 transition">
-                    Crear nueva cita
+            <div class="mt-4">
+                <a href="{{ route('appointments.create') }}"
+                   class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                    Reservar nueva cita
                 </a>
             </div>
-
-            <!-- Información adicional de la peluquería -->
-            <div class="mt-12 bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold mb-4">Juan Studio Hair</h2>
-                <p class="text-gray-700 mb-2">💈 Estilo moderno y clásico</p>
-                <p class="text-gray-700 mb-2">💇‍♂️ Atención personalizada</p>
-                <p class="text-gray-700 mb-2">🎨 Coloración profesional</p>
-                <p class="text-gray-700">📍 Ubicados en Murcia</p>
-            </div>
-        </div>
+        @endif
 
     </div>
 @endsection

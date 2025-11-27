@@ -19,24 +19,6 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
-        // Pepe cliente
-        User::firstOrCreate(
-            ['email' => 'pepe@mail.es'],
-            [
-                'name' => 'Pepe',
-                'password' => bcrypt('12345678'),
-                'role' => 'client',
-            ]
-        );
 
-        // Juan Prueba cliente
-        User::firstOrCreate(
-            ['email' => 'juanprueba@mail.es'],
-            [
-                'name' => 'Juan Prueba',
-                'password' => bcrypt('12345678'),
-                'role' => 'client',
-            ]
-        );
     }
 }
